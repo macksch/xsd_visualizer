@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>XSD Visualizer</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1 class="app-title">XSD Visualizer</h1>
+      <div class="app-actions" role="toolbar" aria-label="Viewer actions">
+        <label class="btn btn-file" aria-label="Upload XSD or XML">
+          <input type="file" id="fileInput" accept=".xsd,.xml" />
+          <span>Open file…</span>
+        </label>
+        <button id="collapseAll" class="btn" type="button">Collapse all</button>
+        <button id="expandAll" class="btn" type="button">Expand all</button>
+        <button id="toggleCatalog" class="btn" type="button" aria-pressed="true">Hide simpleTypes</button>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <section class="dropzone" id="dropzone" aria-label="Drop XSD/XML here" tabindex="0">
+        <p>Drop a <strong>.xsd</strong> or <strong>.xml</strong> here, or use <em>Open file…</em></p>
+      </section>
+
+      <section class="panel panel-error hidden" id="error" role="alert"></section>
+
+      <div class="layout">
+        <section id="tree" class="tree" aria-live="polite"></section>
+        <aside id="simpleTypes" class="simpletypes" aria-live="polite" aria-label="Simple types catalog"></aside>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <small>Refactor v3 · Keyboard: <kbd>Enter/Space</kbd> toggles a focused node ▸/▾</small>
+    </footer>
+
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
