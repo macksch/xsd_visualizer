@@ -163,13 +163,13 @@ function extractRootNodes(xsdDoc) {
 function getObligationLabel(node) {
   if (node.tag === 'attribute') {
     if (node.use === 'required')
-      return '<span class="attrpflicht">Pflicht</span>';
+      return '<span class="attrpflicht">Mandatory</span>';
     else
       return '<span class="attroptional">Optional</span>';
   }
   let minO = node.minOccurs;
   if (minO === '0' || minO == 0) return '<span class="optional">Optional</span>';
-  return '<span class="pflicht">Pflicht</span>';
+  return '<span class="pflicht">Mandatory</span>';
 }
 function getOccursInline(node) {
   if (node.tag === 'attribute') return '';
@@ -183,9 +183,9 @@ function getOccursInline(node) {
 function renderRestrictions(node, isAttribute=false) {
   let res = '';
   if (node.enumeration && node.enumeration.length > 0) {
-    res += `<div class="${isAttribute?'attr-restbox':'restrictionbox'}"><span class="restrictiontitle">Erlaubte Werte:</span>`;
+    res += `<div class="${isAttribute?'attr-restbox':'restrictionbox'}"><span class="restrictiontitle">Allowed values:</span>`;
     for (let v of node.enumeration) {
-      res += `<span class="restrictionvalue">${v === "" ? "(leer)" : v}</span>`;
+      res += `<span class="restrictionvalue">${v === "" ? "(empty)" : v}</span>`;
     }
     res += `</div>`;
   }
@@ -193,11 +193,10 @@ function renderRestrictions(node, isAttribute=false) {
     res += `<div class="${isAttribute?'attr-restbox':'restrictionbox'}"><span class="restrictiontitle">Pattern:</span>
       <span class="restrictionvalue">${node.pattern}</span></div>`;
   }
-  if (node.minLength || node.maxLength || node.length) {
-    res += `<div class="${isAttribute?'attr-restbox':'restrictionbox'}"><span class="restrictiontitle">Länge:</span>`;
+  if (node.minLength || node.maxLength) {
+    res += `<div class="${isAttribute?'attr-restbox':'restrictionbox'}"><span class="restrictiontitle">Length:</span>`;
     if (node.minLength) res += `min=${node.minLength} `;
     if (node.maxLength) res += `max=${node.maxLength} `;
-    if (node.length) res += `fix=${node.length} `;
     res += `</div>`;
   }
   return res;
@@ -206,7 +205,7 @@ function renderAttributeBlock(attr, attrDocs={}) {
   let html = `<div class="attrcard">
     <div class="attr-header">
       <span class="attr-icon">⚙️</span>
-      <span class="attr-badge">Attribut</span>
+      <span class="attr-badge">Attribute</span>
       <span class="attr-name">${attr.name}</span>
       ${attr.type ? `<span class="attr-type">${attr.type}</span>` : ''}
       ${getObligationLabel(attr)}
@@ -266,7 +265,7 @@ function renderNode(node, level=0, parentId='') {
   // Inline-Typdefinition
   if (node.inlinedTypeNode) {
     html += `<div class="typeinfo">
-      <span class="typelabel">Typ-Definition für <b>${node.type}</b>:</span>
+      <span class="typelabel">Type definition for <b>${node.type}</b>:</span>
       ${renderNode(node.inlinedTypeNode, level+1, nodeId + '-inline')}
     </div>`;
   }
@@ -308,13 +307,13 @@ document.getElementById('fileInput').addEventListener('change', function(evt) {
     let parser = new DOMParser();
     let xsdDoc = parser.parseFromString(text, "application/xml");
     if (xsdDoc.querySelector('parsererror')) {
-      document.getElementById('tree').innerHTML = "<b>Fehler beim Parsen der Datei!</b>";
+      document.getElementById('tree').innerHTML = "<b>Error during parsing of the file!</b>";
       return;
     }
     collectGlobalTypes(xsdDoc);
     const rootElements = extractRootNodes(xsdDoc);
     if (rootElements.length===0) {
-      document.getElementById('tree').innerHTML = "<b>Keine globalen Elemente gefunden.</b>";
+      document.getElementById('tree').innerHTML = "<b>No global elements found.</b>";
       return;
     }
     let html = '';
