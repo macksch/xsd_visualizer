@@ -67,6 +67,38 @@ function collectGlobalTypes(xsdDoc) {
   });
   Object.assign(xsdGlobalTypes, xsdSimpleTypes, xsdComplexTypes);
 }
+function getSchemaDocumentation(xsdDoc) {
+  const schema = xsdDoc.getElementsByTagNameNS('*','schema')[0];
+  if (!schema) return '';
+  for (let c of schema.children || []) {
+    if (c.tagName && c.tagName.match(/annotation$/i)) {
+      for (let d of c.children || []) {
+        if (d.tagName && d.tagName.match(/documentation$/i)) {
+          return d.textContent.trim();
+        }
+      }
+    }
+  }
+  return '';
+}
+function renderTypesOverview() {
+  const typesDiv = document.getElementById('types');
+  if (!typesDiv) return;
+  const simple = Object.keys(xsdSimpleTypes);
+  const complex = Object.keys(xsdComplexTypes);
+  let html = '';
+  if (simple.length) {
+    html += '<h3>Simple Types</h3><ul>';
+    for (let t of simple) html += `<li>${t}</li>`;
+    html += '</ul>';
+  }
+  if (complex.length) {
+    html += '<h3>Complex Types</h3><ul>';
+    for (let t of complex) html += `<li>${t}</li>`;
+    html += '</ul>';
+  }
+  typesDiv.innerHTML = html;
+}
 function parseXsdNode(elem, parentChoice=false, parentPath='', typeDepth=0) {
   if (!elem || !elem.tagName) return null;
   const tag = elem.tagName.replace(/^.*:/, '');
@@ -311,6 +343,8 @@ document.getElementById('fileInput').addEventListener('change', function(evt) {
       return;
     }
     collectGlobalTypes(xsdDoc);
+    document.getElementById('description').textContent = getSchemaDocumentation(xsdDoc);
+    renderTypesOverview();
     const rootElements = extractRootNodes(xsdDoc);
     if (rootElements.length===0) {
       document.getElementById('tree').innerHTML = "<b>No global elements found.</b>";
